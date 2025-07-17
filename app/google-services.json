@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "362865139397",
+    "project_id": "mirmessager",
+    "storage_bucket": "mirmessager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:362865139397:android:c851af254bb06882189aac",
+        "android_client_info": {
+          "package_name": "com.example.mirmessager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEA_Db2mF1jkKqDzXO2V8UAdMHi2f9yNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
