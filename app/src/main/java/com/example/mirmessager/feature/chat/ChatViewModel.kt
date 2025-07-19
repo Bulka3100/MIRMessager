@@ -14,7 +14,8 @@ import javax.inject.Inject
 import com.example.mirmessager.data.model.Message
 import com.google.firebase.database.DatabaseError
 
-//TODO "РАЗОБРАТЬСЯ В ПИЗДЕЦЕ"
+//TODO "РАЗОБРАТЬСЯ
+//"
 @HiltViewModel
 class ChatViewModel @Inject constructor() : ViewModel() {
 
