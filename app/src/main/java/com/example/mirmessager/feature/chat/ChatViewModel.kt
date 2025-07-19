@@ -59,8 +59,8 @@ class ChatViewModel @Inject constructor() : ViewModel() {
             imageUrl = null
 
         )
-        firebaseDatabase.getReference("messages").child(channelId).push().setValue(message)
-
+//        firebaseDatabase.getReference("messages").child(channelId).push().setValue(message)
+        firebaseDatabase.reference.child("messages").child(channelId).push().setValue(message)
 
     }
 }

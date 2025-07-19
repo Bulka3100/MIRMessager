@@ -76,7 +76,7 @@ fun HomeScreen(navController: NavController) {
                                 .padding(8.dp)
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(Color.Blue)
-                                .clickable { navController.navigate("") }
+                                .clickable { navController.navigate("chat/${channel.id}") }
                                 .padding(16.dp)
                         )
                     }
