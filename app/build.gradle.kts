@@ -8,6 +8,12 @@ plugins {
 }
 
 android {
+    // произошла ошибка 4 files found with path 'META-INF/versions/9/OSGI-INF/MANIFEST.MF' from inputs: пришлось добавить
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
     namespace = "com.example.mirmessager"
     compileSdk = 35
 
@@ -51,6 +57,7 @@ dependencies {
     implementation(libs.googleid)
     // откуда взялвсь каждая часть этой ссылки
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.identity.jvm)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
