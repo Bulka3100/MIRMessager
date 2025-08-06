@@ -271,7 +271,9 @@ fun ChatBubble(message: Message) {
             } else {
                 Text(
                     text = message.message?.trim() ?: "",
-                    color = Color.White
+                    color = Color.White,
+                    modifier = Modifier
+                        .padding(8.dp)
                 )
             }
         }
