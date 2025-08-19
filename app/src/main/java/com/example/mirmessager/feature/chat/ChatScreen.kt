@@ -48,6 +48,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.mirmessager.R
 import com.example.mirmessager.data.model.Message
 import com.example.mirmessager.ui.theme.DarkGrey
