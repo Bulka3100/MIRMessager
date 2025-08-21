@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -51,6 +52,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mirmessager.R
 import com.example.mirmessager.data.model.Message
+import com.example.mirmessager.feature.home.ChannelItem
 import com.example.mirmessager.ui.theme.DarkGrey
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -60,7 +62,7 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun ChatScreen(navController: NavController, channelId: String) {
+fun ChatScreen(navController: NavController, channelId: String, channelName: String) {
     Scaffold(containerColor = Color.Black) {
         val viewModel: ChatViewModel = hiltViewModel()
 
@@ -74,11 +76,18 @@ fun ChatScreen(navController: NavController, channelId: String) {
         ) { success ->
             if (success) {
                 cameraImageUrl?.let {
-                    viewModel.sendImageMessage(it,channelId)
+                    viewModel.sendImageMessage(it, channelId)
                 }
 
             }
         }
+        val imagelauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.GetContent()
+        ) { uri: Uri? ->
+
+            uri?.let { viewModel.sendImageMessage(it, channelId) }
+        }
+
 
         // конкруетно тут разобрать стнтаксис работы
         fun createImageUri(): Uri {
@@ -118,9 +127,9 @@ fun ChatScreen(navController: NavController, channelId: String) {
             }
             val message = viewModel.message.collectAsState()
 
-            ChatMessages(message.value, { message ->
+            ChatMessages(channelName = channelName, message.value, onSendMessage = { message ->
                 viewModel.sendMessage(channelId, message)
-            }, onSendImage = { alertDialogState = true }
+            }, onImageClicked = { alertDialogState = true }
             )
 
         }
@@ -136,7 +145,10 @@ fun ChatScreen(navController: NavController, channelId: String) {
                     //requestpermission
                     cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
                 }
-            }, onGallerySelected = { alertDialogState = false })
+            }, onGallerySelected = {
+                alertDialogState = false
+                imagelauncher.launch("image/*")
+            })
 
         }
     }
@@ -163,14 +175,24 @@ fun ContentSelectedDialog(onCameraSelected: () -> Unit, onGallerySelected: () ->
 
 @Composable
 fun ChatMessages(
+    channelName: String,
     messages: List<Message>,
     onSendMessage: (String) -> Unit,
-    onSendImage: () -> Unit,
+    onImageClicked: () -> Unit,
 ) {
     val hideKeyboardController = LocalSoftwareKeyboardController.current
     var msg by remember { mutableStateOf("") }
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn {
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            item {
+                Text(
+                    modifier = Modifier
+                        .size(18.dp)
+                        .padding(8.dp),
+                    text = channelName,
+                    color = Color.White
+                )
+            }
             items(messages) { message ->
                 ChatBubble(message)
             }
@@ -178,13 +200,12 @@ fun ChatMessages(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.BottomCenter)
                 .background(color = Color.DarkGray)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = {
-                onSendImage()
+                onImageClicked()
                 msg = ""
             }) {
                 Image(
@@ -193,7 +214,8 @@ fun ChatMessages(
                 )
             }
 
-            TextField(value = msg,
+            TextField(
+                value = msg,
                 onValueChange = { msg = it },
                 modifier = Modifier.weight(1f),
                 placeholder = { Text("напиши сообщение!") },
@@ -267,7 +289,9 @@ fun ChatBubble(message: Message) {
                 AsyncImage(
                     model = message.imageUrl,
                     contentDescription = null,
-                    modifier = Modifier.size(200.dp)
+                    modifier = Modifier.size(200.dp),
+                    contentScale = ContentScale.Crop
+
                 )
             } else {
                 Text(
@@ -278,22 +302,22 @@ fun ChatBubble(message: Message) {
                 )
             }
         }
-       /* //разобрать модификаторы
-        Box(
-            modifier = Modifier
-                //вот тут порядок !!!
-                .widthIn(max = 280.dp)
-                .padding(8.dp)
-                .background(color = bubbleColor, shape = RoundedCornerShape(8.dp))
-        ) {
-            Text(
-                text = message.message?.trim() ?: "",
-                color = Color.White,
-                modifier = Modifier
-                    .padding(8.dp)
+        /* //разобрать модификаторы
+         Box(
+             modifier = Modifier
+                 //вот тут порядок !!!
+                 .widthIn(max = 280.dp)
+                 .padding(8.dp)
+                 .background(color = bubbleColor, shape = RoundedCornerShape(8.dp))
+         ) {
+             Text(
+                 text = message.message?.trim() ?: "",
+                 color = Color.White,
+                 modifier = Modifier
+                     .padding(8.dp)
 
-            )
-        }*/
+             )
+         }*/
         if (isCurrentUser) {
             Image(
                 painter = painterResource(id = R.drawable.mir),
