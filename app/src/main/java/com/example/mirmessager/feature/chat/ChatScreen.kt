@@ -60,6 +60,8 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.foundation.ExperimentalFoundationApi
+
 
 @Composable
 fun ChatScreen(navController: NavController, channelId: String, channelName: String) {
@@ -173,6 +175,7 @@ fun ContentSelectedDialog(onCameraSelected: () -> Unit, onGallerySelected: () ->
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChatMessages(
     channelName: String,
@@ -184,14 +187,8 @@ fun ChatMessages(
     var msg by remember { mutableStateOf("") }
     Column(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.weight(1f)) {
-            item {
-                Text(
-                    modifier = Modifier
-                        .size(18.dp)
-                        .padding(8.dp),
-                    text = channelName,
-                    color = Color.White
-                )
+            stickyHeader {
+                ChannelItem(channelName, mod = Modifier.fillMaxWidth()) { }
             }
             items(messages) { message ->
                 ChatBubble(message)

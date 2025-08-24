@@ -134,7 +134,8 @@ fun HomeScreen(navController: NavController) {
                     )
                 }
                 items(channels.value) { channel ->
-                    ChannelItem(channel.name, { navController.navigate("chat/${channel.id}&${channel.name}") })
+                    ChannelItem(channel.name, mod = Modifier.padding(8.dp) .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp)),{ navController.navigate("chat/${channel.id}&${channel.name}") })
 
 
                 }
@@ -179,12 +180,10 @@ fun AddChannelDialog(onAddChanel: (String) -> Unit) {
 }
 
 @Composable
-fun ChannelItem(channelName: String, onClick: () -> Unit) {
+fun ChannelItem(channelName: String, mod: Modifier, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
+        modifier = mod
+
             .background(DarkGrey)
             .clickable { onClick() }
             .padding(horizontal = 8.dp, vertical = 8.dp),
@@ -224,7 +223,7 @@ fun showItem() {
 
     Scaffold {
         Column(modifier = Modifier.padding(it)) {
-            ChannelItem("test", {})
+            ChannelItem("test", mod = Modifier,{})
         }
     }
 }
