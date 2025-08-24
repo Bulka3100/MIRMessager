@@ -1,5 +1,6 @@
 package com.example.mirmessager.feature.chat
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import com.android.identity.util.UUID
 import com.google.firebase.Firebase
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import com.example.mirmessager.data.model.Message
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.storage.storage
 
 //TODO "РАЗОБРАТЬСЯ
 
@@ -50,7 +52,7 @@ class ChatViewModel @Inject constructor() : ViewModel() {
 
     }
 
-    fun sendMessage(channelId: String, messageText: String) {
+    fun sendMessage(channelId: String, messageText: String?,image:String? = null ) {
         val message = Message(
             firebaseDatabase.reference.push().key ?: UUID.randomUUID().toString(),
             Firebase.auth.currentUser?.uid ?: "",
@@ -58,11 +60,30 @@ class ChatViewModel @Inject constructor() : ViewModel() {
             createdAt = System.currentTimeMillis(),
             senderNameString = Firebase.auth.currentUser?.displayName ?: "anonim",
             senderImage = null,
-            imageUrl = null
+            imageUrl = image
 
         )
 //        firebaseDatabase.getReference("messages").child(channelId).push().setValue(message)
         firebaseDatabase.reference.child("messages").child(channelId).push().setValue(message)
 
     }
+    fun sendImageMessage(uri: Uri, channelID: String) {
+        val imageRef = Firebase.storage.reference.child("images/${UUID.randomUUID()}")
+        imageRef.putFile(uri)
+            .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+                imageRef.downloadUrl
+            }.addOnCompleteListener { task ->
+                val currentUser = Firebase.auth.currentUser
+                if (task.isSuccessful) {
+                    val downloadUri = task.result
+                    sendMessage(channelID, messageText = null, downloadUri.toString())
+                }
+            }
+    }
+
 }
